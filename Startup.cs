@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FileAccesses;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +18,9 @@ namespace FileAccessSample
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddScoped<IFileAccessService, FileAccessService>();
             services.AddControllers();
+            services.AddRazorPages();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

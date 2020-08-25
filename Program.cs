@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace FileAccessSample
 {
@@ -13,7 +10,19 @@ namespace FileAccessSample
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            // nlog.configの読み込み.
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("Nlog.config").GetCurrentClassLogger();
+            try 
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex) {
+                logger.Error(ex, "Stopped program because of exception");
+                throw;
+            }
+            finally {
+                NLog.LogManager.Shutdown();
+            }            
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -21,7 +30,15 @@ namespace FileAccessSample
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http:0.0.0.0:5000");
-                });
+                    webBuilder.UseUrls("http://0.0.0.0:5000");
+                })
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    // NLog 以外で設定された Provider の無効化.
+                    logging.ClearProviders();
+                    // 最小ログレベルの設定.
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                })
+                .UseNLog();
     }
 }
