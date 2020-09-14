@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 
@@ -21,6 +22,7 @@ namespace FileAccesses
                     ParentPath = "",
                     Directory = true,
                     FileType = FileType.Directory,
+                    Children = new List<FilePath>(),
                 };
                 foreach(var content in provider.GetDirectoryContents(string.Empty))
                 {
@@ -42,6 +44,7 @@ namespace FileAccesses
             {
                 newPath.Directory = true;
                 newPath.FileType = FileType.Directory;
+                newPath.Children = new List<FilePath>();
                 foreach(var content in provider.GetDirectoryContents(path))
                 {
                     newPath.Children.Add(GetChild(provider, content, path));

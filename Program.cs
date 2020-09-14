@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,8 +11,11 @@ namespace FileAccessSample
     {
         public static void Main(string[] args)
         {
+            var nlogFile = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Nlog.config");
+            
             // nlog.configの読み込み.
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("Nlog.config").GetCurrentClassLogger();
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog(nlogFile)
+                .GetCurrentClassLogger();
             try 
             {
                 CreateHostBuilder(args).Build().Run();
